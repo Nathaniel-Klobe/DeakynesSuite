@@ -14,7 +14,7 @@ bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 def main():
     db = get_db()
     tickets = db.execute(
-        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, created, promised'
+        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, ticketstatus, created, promised'
         ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
         ' ORDER BY created DESC'
     ).fetchall()
@@ -144,9 +144,12 @@ def update(id):
     if request.method == 'POST':
         ticket_type = request.form['ticket_type']
         ticket_description = request.form['ticket_description']
-        ticketstatus = request.form['ticketstatus']
+        ticketstatus = request.form.get('ticketstatus')
         promised = request.form['promised']
         error = None
+
+        if ticketstatus is not None:
+            ticketstatus = 'In Progress'
 
         if not ticket_type:
             error = 'Ticket Type Required.'
@@ -171,9 +174,47 @@ def update(id):
 @bp.route('/<int:id>/complete', methods=('GET', 'POST'))
 @login_required
 def complete(id):
+    ticket = get_ticket(id)
 
+    if request.method == 'POST':
+        labor = request.form['labor']
+        parts = request.form['parts']
+        other = request.form['other']
+        notes = request.form['notes']
+        hascalled = request.form.get('called')
+        haspickedup = request.form.get('pickedup')
+        ticketstatus = 'Complete'
+        completed = date.today()
+        called = None
+        pickedup = None
+        error = None
 
-    return render_template('app/ticket/complete.html', id = id)
+        if hascalled is not None:
+            ticketstatus = 'Called'
+            called = date.today()
+
+        if haspickedup is not None:
+            ticketstatus = 'Picked Up'
+            pickedup = date.today()
+        
+        if labor is None:
+            error = 'Labor Cost Required.'
+        elif parts is None:
+            error = 'Parts Cost Required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'UPDATE ticket SET labor = ?, parts = ?, other = ?, notes = ?, called = ?, pickedup = ?, completed = ?, ticketstatus = ?'
+                ' WHERE id = ?',
+                (labor, parts, other, notes, called, pickedup, completed, ticketstatus, id)
+            )
+            db.commit()
+            return redirect(url_for('tickets.main'))
+
+    return render_template('app/ticket/complete.html', id = id, ticket = ticket)
 
 
 @bp.route('/<int:id>/sendout', methods=('GET', 'POST'))

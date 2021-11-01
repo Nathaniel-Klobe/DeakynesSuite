@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS specialorder;
 DROP TABLE IF EXISTS rental;
 DROP TABLE IF EXISTS rentalitem;
+DROP TABLE IF EXISTS repairservice;
+DROP TABLE IF EXISTS tickettype;
 
 
 CREATE TABLE customer (
@@ -26,6 +28,14 @@ CREATE TABLE ticket(
     sentoutlocation TEXT,
     sentoutdate DATE,
     sentoutnotes TEXT,
+    labor DECIMAL(4,2),
+    parts DECIMAL(4,2),
+    other DECIMAL(4,2),
+    total DECIMAL(4,2),
+    notes TEXT,
+    completed DATE,
+    called DATE,
+    pickedup DATE,
     FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 
@@ -64,4 +74,16 @@ CREATE TABLE rental(
     paid BOOLEAN NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES customer(id),
     FOREIGN KEY (rentalitem) REFERENCES rentalitem(id)
+);
+
+CREATE TABLE repairservice(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    street_address TEXT NOT NULL,
+    phone TEXT NOT NULL
+);
+
+CREATTE TABLE tickettype(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
 );
