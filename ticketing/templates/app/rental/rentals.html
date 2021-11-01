@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Rentals{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('rentals.customer_landing') }}">New Rental</a>
+    <a class="action" href="{{ url_for('rentals.rentalitems') }}">View Rental Items</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for r in rentals %}
+    <article class="rental">
+        <header>
+            <div>
+                <h2>{{ r['id'] }} | {{ r['last_name'] }}</h2>
+            </div>
+            {% if g.user %}
+            <a class="action" href="{{ url_for('rentals.update', id=r['id']) }}">Edit</a>
+            {% endif %}
+        </header>
+        <div class="about">Phone: {{ r['phone'] }}</div>
+        <div class="about">Item: {{ r['rentalitem'] }} Period: {{ r['rental_period'] }}</div>
+        <div class="about">Created: {{ r['created'] }} Return Date: {{ r['promised'] }}</div>
+        <div class="about">Cost: {{ r['cost'] }} Has Paid: {{ r['paid'] }}</div>
+    </article>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Customer{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="first_name">First Name</label>
+        <input name="first_name" id="first_name" value="{{ request.form['first_name'] }}" required>
+        <label for="last_name">Last Name</label>
+        <input name="last_name" id="last_name" value="{{ request.form['last_name'] }}" required>
+        <label for="street_address">Street Address</label>
+        <input name="street_address" id="street_address" value="{{ request.form['street_address'] }}" required>
+        <label for="phone">Phone Number</label>
+        <input name="phone" id="phone" value="{{ request.form['phone'] }}" required>
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}

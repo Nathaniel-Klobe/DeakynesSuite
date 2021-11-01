@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Ticket{% endblock %}</h1>
+  <div class="about">Customer #{{ id }}</div>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="ticket_type">Ticket Type</label>
+        <select name="ticket_type" id="ticket_type" value="{{ request.form['ticket_type'] }}" required>
+          <option value="screen">Screen</option>
+          <option value="window">Window</option>
+          <option value="small engine">Small Engine</option>
+          <option value="lamp">Lamp</option>
+          <option value="other">Other</option>
+        </select>
+        <label for="ticket_description">Ticket Description</label>
+        <textarea name="ticket_description" id="ticket_description" value="{{ request.form['ticket_description'] }}" required></textarea>
+        <label for="promised">Promised</label>
+        <input name="promised" id="promised" type="date" value="{{ request.form['promised'] }}">
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}

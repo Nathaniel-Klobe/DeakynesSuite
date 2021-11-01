@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Tickets{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('tickets.customer_landing') }}">New Ticket</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for t in tickets %}
+    <article class="ticket">
+        <header>
+            <div>
+                <h2>#{{ t['id'] }} | {{ t['last_name'] }}</h2>
+            </div>
+            {% if g.user %}
+            <a class="action" href="{{ url_for('tickets.update', id=t['id']) }}">Edit</a>
+            {% endif %}
+        </header>
+        <div class="about"> Phone: {{ t['phone'] }}</div>
+        <div class="about">Type: {{ t['ticket_type'] }}</div>
+        <div class="about">Created: {{ t['created'] }}</div>
+        <p class="body">{{ t['ticket_description'] }}</p>
+    </article>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Edit "{{ rental['id'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        <label for="rentailitem">Rental Item</label>
+        <select name="rentalitem" id="rentalitem" value="{{ request.form['rentalitem'] }}" required>
+            {% for r in rental_list %}
+              <option value="{{ r['item_name'] }}">{{ r['item_name'] }}</option>
+            {% endfor %}
+          </select>
+        <label for="rental_period">Rental Period</label>
+        <input name="rental_period" id="rental_period"
+            value= "{{request.form['rental_period'] or rental['rental_period'] }}" required>
+        <label for="cost">Cost</label>
+        <input name="cost" id="cost"
+            value= "{{request.form['cost'] or rental['cost'] }}" required>
+        <label for="paid">Paid</label>
+        <input name="paid" id="paid" type="checkbox"
+            value= "{{request.form['paid'] or rental['paid'] }}" required>
+        <label for="promised">Promised</label>
+        <input name="promised" id="promised" type="date"
+            value= "{{request.form['promised'] or rental['promised'] }}" required>
+        <input type="submit" value="Save">
+    </form>
+    <hr>
+    <form action="{{ url_for('rentals.delete', id = rental['id']) }}" method="POST">
+        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+    </form>
+{% endblock %}

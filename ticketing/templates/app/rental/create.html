@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Rental{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        <label for="rentalitem">Rental Item</label>
+        <select name="rentalitem" id="rentalitem" value="{{ request.form['rentalitem'] }}" required>
+          {% for r in rental_list %}
+            <option value="{{ r['item_name'] }}">{{ r['item_name'] }}</option>
+          {% endfor %}
+        </select>
+        <label for="rental_period">Rental Period(days)</label>
+        <input name="rental_period" id="rental_period" type="number" value="{{ request.form['rental_period'] }}" required>
+        <label for="cost">Cost</label>
+        <input name="cost" id="cost" value="{{ request.form['cost'] }}" required>
+        <label for="promised">Promised</label>
+        <input name="promised" id="promised" type="date" value="{{ request.form['promised'] }}">
+        <label for="paid">Has Paid</label>
+        <input name="paid" id="paid" type="checkbox" value="{{ request.form['paid'] }}">
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}

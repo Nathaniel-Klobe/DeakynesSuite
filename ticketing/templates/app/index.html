@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Dashboard{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+    <h2>Tickets</h2>
+    <div class="about">Active Tickets: {{ cTickets }}</div>
+    <hr>
+    <h2>Orders</h2>
+    <div class="about">Active Orders: {{ cOrders }}</div>
+    <hr>
+    <h2>Rentals</h2>
+    <div class="about">Active Rentals: {{ cRentals }}</div>
+{% endblock %}

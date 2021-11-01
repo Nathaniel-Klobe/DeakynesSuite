@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Customers{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('customers.create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for c in cust %}
+    <article class="customer">
+        <header>
+            <div>
+                <h2>{{ c['id'] }}</h2>
+                <div class="about">Name: {{ c['first_name'] }} {{ c['last_name'] }} Phone: {{ c['phone'] }} Address: 
+                    {{ c[street_address] }} </div>
+            </div>
+        </header>
+    </article>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
