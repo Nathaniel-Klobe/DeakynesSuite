@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -53,8 +53,10 @@ def create(id):
     if request.method == 'POST':
         ticket_type = request.form['ticket_type']
         ticket_description = request.form['ticket_description']
+        reference = request.form['reference']
         promised = request.form['promised']
-        created = datetime.now()
+        created = date.today()
+        ticketstatus = 'New'
         customer_id = id
         error = None
 
@@ -68,8 +70,8 @@ def create(id):
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO ticket (customer_id, ticket_type, ticket_description, created, promised) VALUES(?, ?, ?, ?, ?)',
-                (customer_id, ticket_type, ticket_description, created, promised) 
+                'INSERT INTO ticket (customer_id, ticket_type, ticket_description, reference, ticketstatus, created, promised) VALUES(?, ?, ?, ?, ?, ?, ?)',
+                (customer_id, ticket_type, ticket_description, reference, ticketstatus, created, promised) 
             )
             db.commit()
             return redirect(url_for('tickets.main'))
@@ -142,6 +144,7 @@ def update(id):
     if request.method == 'POST':
         ticket_type = request.form['ticket_type']
         ticket_description = request.form['ticket_description']
+        ticketstatus = request.form['ticketstatus']
         promised = request.form['promised']
         error = None
 
@@ -155,11 +158,57 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE ticket SET ticket_type = ?, ticket_description = ?, promised = ?'
+                'UPDATE ticket SET ticket_type = ?, ticket_description = ?, ticketstatus = ?, promised = ?'
                 ' WHERE id = ?',
-                (ticket_type, ticket_description, promised, id)
+                (ticket_type, ticket_description, ticketstatus, promised, id)
             )
             db.commit()
             return redirect(url_for('tickets.main'))
     
     return render_template('app/ticket/update.html', ticket = ticket)
+
+
+@bp.route('/<int:id>/complete', methods=('GET', 'POST'))
+@login_required
+def complete(id):
+
+
+    return render_template('app/ticket/complete.html', id = id)
+
+
+@bp.route('/<int:id>/sendout', methods=('GET', 'POST'))
+@login_required
+def sendout(id):
+    ticket = get_ticket(id)
+
+    if request.method == 'POST':
+        sentoutlocation = request.form['sentoutlocation']
+        sentoutnotes = request.form['sentoutnotes']
+        ticketstatus = 'sent out'
+        sentoutdate = date.today()
+        error = None
+
+        if sentoutlocation is None:
+            error = 'Sent Out Location Required'
+        
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'UPDATE ticket SET sentoutlocation = ?, sentoutnotes = ?, ticketstatus = ?, sentoutdate = ?'
+                ' WHERE id = ?',
+                (sentoutlocation, sentoutnotes, ticketstatus, sentoutdate, id)
+            )
+            db.commit()
+            return redirect(url_for('tickets.main'))
+
+    return render_template('app/ticket/sendout.html', id = id)
+
+
+@bp.route('/options', methods=('GET', 'POST'))
+@login_required
+def options():
+
+
+    return render_template('app/ticket/options')

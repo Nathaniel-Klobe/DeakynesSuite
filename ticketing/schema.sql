@@ -19,8 +19,13 @@ CREATE TABLE ticket(
     customer_id INTEGER NOT NULL,
     ticket_type TEXT NOT NULL,
     ticket_description TEXT NOT NULL,
-    created DATETIME NOT NULL,
-    promised DATETIME,
+    reference TEXT,
+    ticketstatus TEXT NOT NULL,
+    created DATE NOT NULL,
+    promised DATE,
+    sentoutlocation TEXT,
+    sentoutdate DATE,
+    sentoutnotes TEXT,
     FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 
@@ -36,8 +41,8 @@ CREATE TABLE specialorder(
     order_type TEXT NOT NULL,
     order_description TEXT NOT NULL,
     order_from TEXT NOT NULL,
-    created DATETIME NOT NULL,
-    promised DATETIME,
+    created DATE NOT NULL,
+    promised DATE,
     FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 
@@ -53,8 +58,8 @@ CREATE TABLE rental(
     customer_id INTEGER NOT NULL,
     rentalitem INTEGER NOT NULL,
     rental_period TEXT NOT NULL,
-    created DATETIME NOT NULL,
-    promised DATETIME NOT NULL,
+    created DATE NOT NULL,
+    promised DATE NOT NULL,
     cost DECIMAL NOT NULL,
     paid BOOLEAN NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES customer(id),

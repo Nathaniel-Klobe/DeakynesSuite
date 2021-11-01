@@ -17,6 +17,8 @@
         </select>
         <label for="ticket_description">Ticket Description</label>
         <textarea name="ticket_description" id="ticket_description" value="{{ request.form['ticket_description'] }}" required></textarea>
+        <label for="reference">Reference ID</label>
+        <input name="reference" id="reference" value="{{ request.form['reference'] }}">
         <label for="promised">Promised</label>
         <input name="promised" id="promised" type="date" value="{{ request.form['promised'] }}">
         <input type="submit" value="Save">
