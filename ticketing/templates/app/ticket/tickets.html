@@ -9,28 +9,32 @@
 {% endblock %}
 
 {% block content %}
-  {% for t in tickets %}
+  {% for ticket in tickets %}
     <article class="ticket">
         <header>
             <ul>
               <li style="display: inline-block;">
-                <h2>#{{ t['id'] }} | {{ t['last_name'] }} | </h2>
+                <h3>#{{ ticket['id'] }} | {{ ticket['last_name'] }} | </h3>
               </li>
               <li style="display: inline-block;">
-                <a class="action" href="{{ url_for('tickets.update', id=t['id']) }}">Update</a>
+                <a class="action" href="{{ url_for('tickets.view', id=ticket['id']) }}">View</a>
               </li>
               <li style="display: inline-block;">
-                <a class="action" href="{{ url_for('tickets.sendout', id=t['id']) }}">Send Out</a>
+                <a class="action" href="{{ url_for('tickets.update', id=ticket['id']) }}">Update</a>
               </li>
               <li style="display: inline-block;">
-                <a class="action" href="{{ url_for('tickets.complete', id=t['id']) }}">Complete</a>
+                <a class="action" href="{{ url_for('tickets.sendout', id=ticket['id']) }}">Send Out</a>
+              </li>
+              <li style="display: inline-block;">
+                <a class="action" href="{{ url_for('tickets.complete', id=ticket['id']) }}">Complete</a>
               </li>
             </ul>
         </header>
-        <div class="about"> Phone: {{ t['phone'] }}</div>
-        <div class="about">Type: {{ t['ticket_type'] }}</div>
-        <div class="about">Status: {{ t['ticketstatus'] }}</div>
-        <p class="body">{{ t['ticket_description'] }}</p>
+        <ul>
+          <li style="display: inline-block;"> Phone: {{ ticket['phone'] }} | </li>
+          <li style="display: inline-block;"> Type: {{ ticket['ticket_type'] }} | </li>
+          <li style="display: inline-block;"> Status: {{ ticket['ticketstatus'] }} | </li>
+      </ul>
     </article>
     {% if not loop.last %}
         <hr>

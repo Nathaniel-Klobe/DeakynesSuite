@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <ul>
+    <li style="display: inline-block;">
+      <h2>#{{ ticket['id'] }} | {{ ticket['last_name'] }} | </h2>
+    </li>
+    <li style="display: inline-block;">
+      <a class="action" href="{{ url_for('tickets.update', id=ticket['id']) }}">Update</a>
+    </li>
+    <li style="display: inline-block;">
+      <a class="action" href="{{ url_for('tickets.sendout', id=ticket['id']) }}">Send Out</a>
+    </li>
+    <li style="display: inline-block;">
+      <a class="action" href="{{ url_for('tickets.complete', id=ticket['id']) }}">Complete</a>
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li style="display: inline-block;"> Phone: {{ ticket['phone'] }} | </li>
+        <li style="display: inline-block;"> Type: {{ ticket['ticket_type'] }} | </li>
+        <li style="display: inline-block;"> Status: {{ ticket['ticketstatus'] }} | </li>
+    </ul>
+    <hr>
+    <p class="body">{{ ticket['ticket_description'] }}</p>
+    <hr>
+    {% if ticket['ticketstatus'] == 'sent out' %}
+    <ul>
+        <li style="display: inline-block;"> Sent Out to: {{ ticket['sentoutlocation'] }} | </li>
+        <li style="display: inline-block;"> Sent Out Date: {{ ticket['sentoutdate'] }} | </li>
+    </ul>
+    <p class="body">{{ ticket['sentoutnotes'] }}</p>
+    <hr>
+    {% endif %}
+    {% if ticket['ticketstatus'] == 'completed' %}
+    <ul>
+        <li style="display: inline-block;">
+            <li style="display: inline-block;"> Labor: ${{ ticket['labor'] }}</div>
+            <div class="about">Parts: ${{ ticket['parts'] }}</div>
+            <div class="about"> Other: ${{ ticket['other'] }}</div>
+            <div class="about">Total: ${{ ticket['total'] }}</div>
+            <p class="body">{{ ticket['notes'] }}</p>
+          </li>
+    </ul>
+    <hr>
+    {% endif %}
+    {% if ticket['ticketstatus'] == 'called' %}
+    <ul>
+        <li style="display: inline-block;">
+            <div class="about"> Labor: ${{ ticket['labor'] }}</div>
+            <div class="about">Parts: ${{ ticket['parts'] }}</div>
+            <div class="about"> Other: ${{ ticket['other'] }}</div>
+            <div class="about">Total: ${{ ticket['total'] }}</div>
+            <p class="body">{{ ticket['notes'] }}</p>
+            <div class="about">Has Been Called, Date: ${{ ticket['called'] }}</div>
+          </li>
+    </ul>
+    <hr>
+    {% endif %}
+    {% if ticket['ticketstatus'] == 'picked up' %}
+    <ul>
+        <li style="display: inline-block;">
+            <div class="about"> Labor: ${{ ticket['labor'] }}</div>
+            <div class="about">Parts: ${{ ticket['parts'] }}</div>
+            <div class="about"> Other: ${{ ticket['other'] }}</div>
+            <div class="about">Total: ${{ ticket['total'] }}</div>
+            <p class="body">{{ ticket['notes'] }}</p>
+            <div class="about">Has Been Picked Up, Date: ${{ ticket['pickedup'] }}</div>
+          </li>
+    </ul>
+    <hr>
+    {% endif %}
+
+
+{% endblock %}

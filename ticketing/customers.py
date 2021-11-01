@@ -22,9 +22,9 @@ def main():
 @login_required
 def create():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        street_address = request.form['street_address']
+        first_name = request.form['first_name'].lower()
+        last_name = request.form['last_name'].lower()
+        street_address = request.form['street_address'].lower()
         phone = request.form['phone']
         
         error = None

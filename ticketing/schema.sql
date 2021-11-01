@@ -83,7 +83,7 @@ CREATE TABLE repairservice(
     phone TEXT NOT NULL
 );
 
-CREATTE TABLE tickettype(
+CREATE TABLE tickettype(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
 );

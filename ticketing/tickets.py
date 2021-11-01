@@ -115,7 +115,7 @@ def create_customer():
 
 def get_ticket(id):
     ticket = get_db().execute(
-        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, created, promised'
+        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, reference, ticketstatus, created, promised, sentoutlocation, sentoutdate, sentoutnotes, labor, parts, other, total, notes, completed, called, pickedup'
         ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
         ' WHERE t.id = ?', (id,)
     ).fetchone()
@@ -183,18 +183,19 @@ def complete(id):
         notes = request.form['notes']
         hascalled = request.form.get('called')
         haspickedup = request.form.get('pickedup')
-        ticketstatus = 'Complete'
+        ticketstatus = 'completed'
         completed = date.today()
+        total = labor + parts + other
         called = None
         pickedup = None
         error = None
 
         if hascalled is not None:
-            ticketstatus = 'Called'
+            ticketstatus = 'called'
             called = date.today()
 
         if haspickedup is not None:
-            ticketstatus = 'Picked Up'
+            ticketstatus = 'picked up'
             pickedup = date.today()
         
         if labor is None:
@@ -207,9 +208,9 @@ def complete(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE ticket SET labor = ?, parts = ?, other = ?, notes = ?, called = ?, pickedup = ?, completed = ?, ticketstatus = ?'
+                'UPDATE ticket SET labor = ?, parts = ?, other = ?, total = ?, notes = ?, called = ?, pickedup = ?, completed = ?, ticketstatus = ?'
                 ' WHERE id = ?',
-                (labor, parts, other, notes, called, pickedup, completed, ticketstatus, id)
+                (labor, parts, other, total, notes, called, pickedup, completed, ticketstatus, id)
             )
             db.commit()
             return redirect(url_for('tickets.main'))
@@ -246,6 +247,13 @@ def sendout(id):
 
     return render_template('app/ticket/sendout.html', id = id)
 
+
+@bp.route('/<int:id>/view')
+@login_required
+def view(id):
+    ticket = get_ticket(id)
+
+    return render_template('app/ticket/view.html', ticket = ticket)
 
 @bp.route('/options', methods=('GET', 'POST'))
 @login_required
