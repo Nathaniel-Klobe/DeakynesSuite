@@ -54,8 +54,4 @@ def create_app(test_config=None):
     from . import rentals
     app.register_blueprint(rentals.bp)
 
-    #rentalitems blueprint
-    from . import rentalitems
-    app.register_blueprint(rentalitems.bp)
-
     return app

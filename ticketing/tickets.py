@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -14,7 +14,7 @@ bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 def main():
     db = get_db()
     tickets = db.execute(
-        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, created, promised'
+        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, ticketstatus, created, promised'
         ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
         ' ORDER BY created DESC'
     ).fetchall()
@@ -53,8 +53,10 @@ def create(id):
     if request.method == 'POST':
         ticket_type = request.form['ticket_type']
         ticket_description = request.form['ticket_description']
+        reference = request.form['reference']
         promised = request.form['promised']
-        created = datetime.now()
+        created = date.today()
+        ticketstatus = 'New'
         customer_id = id
         error = None
 
@@ -68,8 +70,8 @@ def create(id):
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO ticket (customer_id, ticket_type, ticket_description, created, promised) VALUES(?, ?, ?, ?, ?)',
-                (customer_id, ticket_type, ticket_description, created, promised) 
+                'INSERT INTO ticket (customer_id, ticket_type, ticket_description, reference, ticketstatus, created, promised) VALUES(?, ?, ?, ?, ?, ?, ?)',
+                (customer_id, ticket_type, ticket_description, reference, ticketstatus, created, promised) 
             )
             db.commit()
             return redirect(url_for('tickets.main'))
@@ -113,7 +115,7 @@ def create_customer():
 
 def get_ticket(id):
     ticket = get_db().execute(
-        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, created, promised'
+        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, reference, ticketstatus, created, promised, sentoutlocation, sentoutdate, sentoutnotes, labor, parts, other, total, notes, completed, called, pickedup'
         ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
         ' WHERE t.id = ?', (id,)
     ).fetchone()
@@ -142,8 +144,12 @@ def update(id):
     if request.method == 'POST':
         ticket_type = request.form['ticket_type']
         ticket_description = request.form['ticket_description']
+        ticketstatus = request.form.get('ticketstatus')
         promised = request.form['promised']
         error = None
+
+        if ticketstatus is not None:
+            ticketstatus = 'In Progress'
 
         if not ticket_type:
             error = 'Ticket Type Required.'
@@ -155,11 +161,103 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE ticket SET ticket_type = ?, ticket_description = ?, promised = ?'
+                'UPDATE ticket SET ticket_type = ?, ticket_description = ?, ticketstatus = ?, promised = ?'
                 ' WHERE id = ?',
-                (ticket_type, ticket_description, promised, id)
+                (ticket_type, ticket_description, ticketstatus, promised, id)
             )
             db.commit()
             return redirect(url_for('tickets.main'))
     
     return render_template('app/ticket/update.html', ticket = ticket)
+
+
+@bp.route('/<int:id>/complete', methods=('GET', 'POST'))
+@login_required
+def complete(id):
+    ticket = get_ticket(id)
+
+    if request.method == 'POST':
+        labor = request.form['labor']
+        parts = request.form['parts']
+        other = request.form['other']
+        notes = request.form['notes']
+        hascalled = request.form.get('called')
+        haspickedup = request.form.get('pickedup')
+        ticketstatus = 'completed'
+        completed = date.today()
+        total = labor + parts + other
+        called = None
+        pickedup = None
+        error = None
+
+        if hascalled is not None:
+            ticketstatus = 'called'
+            called = date.today()
+
+        if haspickedup is not None:
+            ticketstatus = 'picked up'
+            pickedup = date.today()
+        
+        if labor is None:
+            error = 'Labor Cost Required.'
+        elif parts is None:
+            error = 'Parts Cost Required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'UPDATE ticket SET labor = ?, parts = ?, other = ?, total = ?, notes = ?, called = ?, pickedup = ?, completed = ?, ticketstatus = ?'
+                ' WHERE id = ?',
+                (labor, parts, other, total, notes, called, pickedup, completed, ticketstatus, id)
+            )
+            db.commit()
+            return redirect(url_for('tickets.main'))
+
+    return render_template('app/ticket/complete.html', id = id, ticket = ticket)
+
+
+@bp.route('/<int:id>/sendout', methods=('GET', 'POST'))
+@login_required
+def sendout(id):
+    ticket = get_ticket(id)
+
+    if request.method == 'POST':
+        sentoutlocation = request.form['sentoutlocation']
+        sentoutnotes = request.form['sentoutnotes']
+        ticketstatus = 'sent out'
+        sentoutdate = date.today()
+        error = None
+
+        if sentoutlocation is None:
+            error = 'Sent Out Location Required'
+        
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'UPDATE ticket SET sentoutlocation = ?, sentoutnotes = ?, ticketstatus = ?, sentoutdate = ?'
+                ' WHERE id = ?',
+                (sentoutlocation, sentoutnotes, ticketstatus, sentoutdate, id)
+            )
+            db.commit()
+            return redirect(url_for('tickets.main'))
+
+    return render_template('app/ticket/sendout.html', id = id)
+
+
+@bp.route('/<int:id>/view')
+@login_required
+def view(id):
+    ticket = get_ticket(id)
+
+    return render_template('app/ticket/view.html', ticket = ticket)
+
+@bp.route('/options', methods=('GET', 'POST'))
+@login_required
+def options():
+
+
+    return render_template('app/ticket/options')

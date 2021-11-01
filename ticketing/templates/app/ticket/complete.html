@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Complete "{{ ticket['id'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        <label for="labor">Labor Cost</label>
+        <input name="labor" id="labor" value="{{ request.form['labor'] or ticket['labor'] }}" required>
+        <label for="parts">Parts Cost</label>
+        <input name="parts" id="parts" value="{{ request.form['parts'] or ticket['parts'] }}" required>
+        <label for="other">Other Costs</label>
+        <input name="other" id="other" value="{{ request.form['other'] or ticket['other'] }}">
+        <label for="notes">Notes</label>
+        <textarea name="notes" id="notes" value="{{ request.form['notes'] or ticket['notes'] }}"></textarea>
+        <label for="called">Called</label>
+        <input name="called" id="called" type="checkbox" value="{{ request.form['called'] or ticket['called'] }}">
+        <label for="pickedup">Picked up</label>
+        <input name="pickedup" id="pickedup" type="checkbox" value="{{ request.form['pickedup'] or ticket['pickedup'] }}">
+        <input type="submit" value="Complete">
+    </form>
+    <hr>
+{% endblock %}
