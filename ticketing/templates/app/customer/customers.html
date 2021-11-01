@@ -4,6 +4,7 @@
   <h1>{% block title %}Customers{% endblock %}</h1>
   {% if g.user %}
     <a class="action" href="{{ url_for('customers.create') }}">New</a>
+    <a class="action" href="{{ url_for('customers.options') }}">Options</a>
   {% endif %}
 {% endblock %}
 
@@ -11,11 +12,17 @@
   {% for c in cust %}
     <article class="customer">
         <header>
-            <div>
-                <h2>{{ c['id'] }}</h2>
-                <div class="about">Name: {{ c['first_name'] }} {{ c['last_name'] }} Phone: {{ c['phone'] }} Address: 
-                    {{ c[street_address] }} </div>
-            </div>
+          <ul>
+            <li style="display: inline-block;">
+              <h3>{{ c['last_name'] }} | {{ c['first_name'] }} | </h3>
+            </li>
+            <li style="display: inline-block;">
+              <a class="action" href="{{ url_for('customers.view', id=c['id']) }}">View</a>
+            </li>
+            <li style="display: inline-block;">
+              <a class="action" href="{{ url_for('customers.update', id=c['id']) }}">Update</a>
+            </li>
+          </ul>
         </header>
     </article>
     {% if not loop.last %}

@@ -12,7 +12,7 @@ CREATE TABLE customer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    street_address TEXT NOT NULL,
+    street_address TEXT,
     phone TEXT NOT NULL
 );
 
