@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <ul>
+    <li style="display: inline-block;">
+      <h2>#{{ customer['id'] }} | {{ customer['last_name'] }} | </h2>
+    </li>
+    <li style="display: inline-block;">
+      <a class="action" href="{{ url_for('tickets.update', id=customer['id']) }}">Update</a>
+    </li>
+  </ul>
+{% endblock %}
+
+
+{% block content %}
+  <div class="about">{{ customer['last_name'] }}, {{ customer['first_name'] }}</div>
+  <div class="about">Phone: {{ customer['phone'] }}</div>
+  <div class="about">Address: {{ customer['street_address'] }}</div>
+  <hr>
+  <h3>Tickets</h3>
+  {% for ticket in tickets %}
+    <ul>
+        <li style="display: inline-block;"></li>
+            <a class="action" href="{{ url_for('tickets.view', id=ticket['id']) }}">View</a>
+        </li>
+        <li style="display: inline-block;">
+            <h3>|  #{{ ticket['id'] }} | </h3>
+        </li>
+        <li style="display: inline-block;"> Type: {{ ticket['ticket_type'] }} | </li>
+        <li style="display: inline-block;"> Status: {{ ticket['ticketstatus'] }} | </li>
+        <li style="display: inline-block;"> Reference: #{{ ticket['reference'] }} | </li>
+        <li style="display: inline-block;"> Created: {{ ticket['created'] }} | </li>
+    </ul>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+  <h3>Orders</h3>
+  {% for order in orders %}
+      <ul>
+        <li style="display: inline-block;">
+            <a class="action" href="{{ url_for('orders.view', id=order['id']) }}">View</a>
+        </li>
+        <li style="display: inline-block;">
+            <h3>|  #{{ order['id'] }} | </h3>
+        </li>
+        <li style="display: inline-block;"> Type: {{ order['order_type'] }} | </li>
+        <li style="display: inline-block;"> Created: {{ order['created'] }} | </li>
+    </ul>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+  <h3>Rentals</h3>
+  {% for rental in rentals %}
+    <ul>
+        <li style="display: inline-block;">
+            <a class="action" href="{{ url_for('rentals.view', id=rental['id']) }}">View</a>
+        </li>
+        <li style="display: inline-block;">
+            <h3>|  #{{ rental['id'] }} | </h3>
+        </li>
+        <li style="display: inline-block;"> Rental Item: {{ rental['rentatlitem'] }} | </li>
+        <li style="display: inline-block;"> Created: {{ rental['created'] }} | </li>
+        <li style="display: inline-block;"> Promised: {{ rental['promised'] }} | </li>
+    </ul>
+    {% if not loop.last %}
+        <hr>
+    {% endif %}
+  {% endfor %}
+
+  {% endblock %}
+
