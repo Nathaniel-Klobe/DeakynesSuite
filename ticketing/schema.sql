@@ -42,7 +42,12 @@ CREATE TABLE ticket(
 CREATE TABLE user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    street_address TEXT NOT NULL,
+    level TEXT NOT NULL
 );
 
 CREATE TABLE specialorder(

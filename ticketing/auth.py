@@ -95,3 +95,39 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+
+@bp.route('/main')
+@login_required
+def main():
+
+    return render_template('auth/users.html')
+
+
+def get_user(id):
+    user = None
+
+    return user
+
+
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
+def update(id):
+    user = get_user()
+
+    return render_template('auth/update.html', user = user)
+
+
+@bp.route('/<int:id>/view', methods=('GET', 'POST'))
+@login_required
+def view(id):
+    user = get_user()
+
+    return render_template('auth/view.html', user = user)
+
+
+@bp.route('/options', methods=('GET', 'POST'))
+@login_required
+def options():
+
+    return render_template('auth/optoins.html')
