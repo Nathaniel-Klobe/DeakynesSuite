@@ -58,11 +58,11 @@ This is an example of how to list things you need to use the software and how to
   npm install npm@latest -g
   ```
 
-
 ### Installation
 
  1. Clone the Repository
  2. Create a virtual environment
+ 3. Install PostgreSQL
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -91,12 +91,13 @@ This is an example of how to list things you need to use the software and how to
 ## Roadmap
 
 - [ ] Add Changelog
-- [ ] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+- [ ] Add SqlAcademy with PostgreSQL handling
+- [ ] WTForm Validation
+- [ ] Add Testing Functionality
+- [ ] Add Logging
+- [ ] Package Modules
+- [ ] Deploy 0.1.0
+
 
 See the [open issues](https://github.com/Nathaniel-Klobe/DeakynesSuite/issues) for a full list of proposed features (and known issues).
 
@@ -109,7 +110,6 @@ Distributed under the GNU License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Contact
-
 
 Project Link: [https://github.com/your_username/repo_name](https://github.com/Nathaniel-Klobe/deakynesSuite)
 
