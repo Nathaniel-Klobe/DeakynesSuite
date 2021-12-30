@@ -3,7 +3,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
-# Deakyne's Hardware Suite
+# Ticketing Suite
 
 <details>
   <summary>Table of Contents</summary>
