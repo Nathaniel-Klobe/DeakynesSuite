@@ -90,13 +90,13 @@ This is an example of how to list things you need to use the software and how to
  
 ## Roadmap
 
-- [x] Add Changelog
 - [ ] Add SqlAcademy with PostgreSQL handling
-- [ ] WTForm Validation
+- [ ] Add WTForm Validation
+- [ ] Add Application Builder
 - [ ] Add Testing Functionality
 - [ ] Add Logging
 - [ ] Package Modules
-- [ ] Deploy 0.1.0
+- [ ] Deploy v0.1.0
 
 
 See the [open issues](https://github.com/Nathaniel-Klobe/DeakynesSuite/issues) for a full list of proposed features (and known issues).
