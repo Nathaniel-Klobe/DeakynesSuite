@@ -1,5 +1,5 @@
 Switch Venv:
-> cd E:\DeakynesSuite
+E:\DeakynesSuite
 > venv\Scripts\activate
 
 Start Server:

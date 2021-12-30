@@ -26,32 +26,32 @@ def create_app(test_config=None):
 
 
     #register database
-    from . import db
+    from ticketing import db
     db.init_app(app)
 
     #auth blueprint
-    from . import auth
+    from ticketing import auth
     app.register_blueprint(auth.bp)
 
     #dashboard blueprint
-    from . import dashboard
+    from ticketing import dashboard
     app.register_blueprint(dashboard.bp)
     app.add_url_rule('/', endpoint='index')
     
     #customers blueprint
-    from . import customers
+    from ticketing import customers
     app.register_blueprint(customers.bp)
 
     #tickets blueprint
-    from . import tickets
+    from ticketing import tickets
     app.register_blueprint(tickets.bp)
 
     #orders blueprint
-    from . import orders
+    from ticketing import orders
     app.register_blueprint(orders.bp)
 
     #rentals blueprint
-    from . import rentals
+    from ticketing import rentals
     app.register_blueprint(rentals.bp)
 
     return app
