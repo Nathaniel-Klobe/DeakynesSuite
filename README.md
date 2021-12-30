@@ -117,7 +117,7 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/Na
 
 [issues-shield]: https://img.shields.io/github/issues/Nathaniel-Klobe/DeakynesSuite.svg?style=for-the-badge
 [issues-url]: https://github.com/Nathaniel-Klobe/DeakynesSuite/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/issues/Nathaniel-Klobe/DeakynesSuite
 [license-url]: https://github.com/Nathaniel-Klobe/DeakynesSuite/blob/master/LICENSE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/nate-klobe-753b59225/
