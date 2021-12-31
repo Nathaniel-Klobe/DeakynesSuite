@@ -6,9 +6,9 @@ from sqlalchemy.sql.expression import false
 
 from werkzeug.exceptions import abort
 
-from ticketing.database import db_session
+from flask import current_app as app
 from ticketing.auth import login_required
-from ticketing.models import Ticket
+from ticketing.models import db, Ticket
 
 bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
@@ -61,6 +61,9 @@ def create(id):
         if error is not None:
             flash(error)
         else:
+            new_ticket = Ticket(
+                
+            )
             db_session.add(Ticket(id, ticket_type=ticket_type,
                 ticket_description=ticket_description, ticket_status='New', created=datetime.now(),
                 promised=promised, bDone=False, bNotified=False,

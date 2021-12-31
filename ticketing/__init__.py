@@ -14,12 +14,6 @@ db = SQLAlchemy()
 def init_app(test_config=None):
     """Construct the Core Application"""
     app = Flask(__name__, instance_relative_config=True)
-    db_url = 'postgres://localhost:5432/ticketing-test'
-
-    app.config.from_mapping(
-        SQLALCHEMY_DATABASE_URI=db_url,
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    )
 
     if test_config is None:
         #Load the instance config, if it exists, when not testing
