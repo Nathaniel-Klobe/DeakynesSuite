@@ -14,12 +14,7 @@ bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
 @bp.route('/')
 def main():
-    db = get_db()
-    tickets = db.execute(
-        'SELECT t.id, c.last_name, c.phone, ticket_type, ticket_description, ticketstatus, created, promised'
-        ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
+    tickets = db_session.query()
     return render_template('app/ticket/tickets.html', tickets = tickets)
 
 

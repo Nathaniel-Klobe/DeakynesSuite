@@ -11,8 +11,8 @@ __version__ = (0,1,0, "dev")
 
 db = SQLAlchemy()
 
-def create_app(test_config=None):
-    #create and configure the app
+def init_app(test_config=None):
+    """Construct the Core Application"""
     app = Flask(__name__, instance_relative_config=True)
     db_url = 'postgres://localhost:5432/ticketing-test'
 
@@ -34,28 +34,27 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-
-    #register database
-    from ticketing import database
     db.init_app(app)
-    app.cli.add_command(init_db_command)
 
-    #auth blueprint
-    from ticketing import auth
-    app.register_blueprint(auth.bp)
+    with app.app_context():
+        from ticketing import database, auth, dashboard, customers, tickets
 
-    #dashboard blueprint
-    from ticketing import dashboard
-    app.register_blueprint(dashboard.bp)
-    app.add_url_rule('/', endpoint='index')
-    
-    #customers blueprint
-    from ticketing import customers
-    app.register_blueprint(customers.bp)
+        # Database
+        db.create_all() # Create the Sql tables for our existing models
+        app.cli.add_command(init_db_command)
 
-    #tickets blueprint
-    from ticketing import tickets
-    app.register_blueprint(tickets.bp)
+        #auth
+        app.register_blueprint(auth.bp)
 
-    return app
+        #dashboard
+        app.register_blueprint(dashboard.bp)
+        app.add_url_rule('/', endpoint='index')
+        
+        #customers
+        app.register_blueprint(customers.bp)
+
+        #tickets
+        app.register_blueprint(tickets.bp)
+
+        return app
 
