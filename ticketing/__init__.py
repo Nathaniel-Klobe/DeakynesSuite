@@ -1,14 +1,24 @@
 import os
 
+import click
 from flask import Flask
+from flask.cli import with_appcontext
+from flask_sqlalchemy import SQLAlchemy
 
+from ticketing.database import init_db_command
+
+__version__ = (0,1,0, "dev")
+
+db = SQLAlchemy()
 
 def create_app(test_config=None):
     #create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    db_url = 'postgres://localhost:5432/ticketing-test'
+
     app.config.from_mapping(
-        SECRET_KEY = 'dev',
-        DATABASE = os.path.join(app.instance_path, 'deakynes_ticketing.sqlite'),
+        SQLALCHEMY_DATABASE_URI=db_url,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
     if test_config is None:
@@ -26,8 +36,9 @@ def create_app(test_config=None):
 
 
     #register database
-    from ticketing import db
+    from ticketing import database
     db.init_app(app)
+    app.cli.add_command(init_db_command)
 
     #auth blueprint
     from ticketing import auth
@@ -55,3 +66,4 @@ def create_app(test_config=None):
     app.register_blueprint(rentals.bp)
 
     return app
+

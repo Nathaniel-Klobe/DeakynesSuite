@@ -3,9 +3,10 @@ from flask import (
 )
 
 from werkzeug.exceptions import abort
+import ticketing
 
 from ticketing.auth import login_required
-from ticketing.db import get_db
+from ticketing.database import get_db
 
 bp = Blueprint('dashboard', __name__)
 
@@ -24,5 +25,4 @@ def index():
 
     return render_template('app/index.html', 
         cTickets = cTickets, cOrders = cOrders, cRentals = cRentals)
-
     

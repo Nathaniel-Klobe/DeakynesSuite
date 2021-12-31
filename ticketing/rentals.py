@@ -6,7 +6,7 @@ from flask import (
 from werkzeug.exceptions import abort
 
 from ticketing.auth import login_required
-from ticketing.db import get_db
+from ticketing.database import get_db
 
 bp = Blueprint('rentals', __name__, url_prefix='/rentals')
 
