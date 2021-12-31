@@ -57,13 +57,5 @@ def create_app(test_config=None):
     from ticketing import tickets
     app.register_blueprint(tickets.bp)
 
-    #orders blueprint
-    from ticketing import orders
-    app.register_blueprint(orders.bp)
-
-    #rentals blueprint
-    from ticketing import rentals
-    app.register_blueprint(rentals.bp)
-
     return app
 
