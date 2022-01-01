@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, EmailField, SelectField, DateTimeField, validators
+from wtforms import Form, StringField, SelectField, DateTimeField, validators
 
 class TicketForm(Form):
     """Validation for for ticket creation."""

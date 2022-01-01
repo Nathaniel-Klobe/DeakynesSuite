@@ -1,6 +1,5 @@
 """Data Models."""
-from datetime import datetime
-from sqlalchemy import Table, Column, Integer, String, Float, Text
+from sqlalchemy import Column, Integer, String, Float, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Boolean, DateTime

@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, EmailField, validators
+from wtforms import Form, StringField, validators
 
 class CustomerSearchForm(Form):
     """Validation for for customer search"""

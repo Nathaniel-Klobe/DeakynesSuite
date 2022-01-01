@@ -1,7 +1,6 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, redirect, render_template, request, url_for
 )
-from werkzeug.exceptions import abort
 from ticketing.auth import login_required
 from ticketing.forms.customerform import CustomerForm
 from ticketing.models import Customer, Ticket

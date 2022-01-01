@@ -2,7 +2,6 @@ import os
 
 import click
 from flask import Flask
-from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 
 __version__ = (0,1,0, "dev")
@@ -30,7 +29,7 @@ def init_app(test_config=None):
     db.init_app(app)
 
     with app.app_context():
-        from ticketing import database, auth, dashboard, customers, tickets
+        from ticketing import auth, dashboard, customers, tickets
 
         # Database
         db.create_all() # Create the Sql tables for our existing models

@@ -1,9 +1,7 @@
 from datetime import date, datetime
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, redirect, render_template, request, url_for
 )
-
-from werkzeug.exceptions import abort
 
 from ticketing.auth import login_required
 from ticketing.forms.customersearchform import CustomerSearchForm
