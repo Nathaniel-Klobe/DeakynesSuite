@@ -2,44 +2,41 @@ from datetime import date, datetime
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
-from sqlalchemy.sql.expression import false
 
 from werkzeug.exceptions import abort
 
-from flask import current_app as app
 from ticketing.auth import login_required
-from ticketing.models import db, Ticket
+from ticketing.forms.customersearchform import CustomerSearchForm
+from ticketing.forms.ticketform import TicketForm
+from ticketing.forms.completeticketform import CompleteTicketForm
+from ticketing.models import Ticket, Customer
+from . import db
 
 bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
 @bp.route('/')
 def main():
-    tickets = db_session.query()
+    """Displays a grid of all tickets."""
+
+    tickets = Ticket.query.order_by(Ticket.id).all()
     return render_template('app/ticket/tickets.html', tickets = tickets)
 
 
 @bp.route('/landing', methods=('GET', 'POST'))
 @login_required
 def customer_landing():
+    """View to either add an existing customer or create a new one."""
+
     if request.method == "POST":
         if request.form.get('create'):
             return redirect(url_for('tickets.new_customer'))
 
         if request.form.get('search'):
-            db = get_db()
-            error = None
-            last_name = request.form.get('last_name', False)
-            customer = db.execute(
-                'SELECT * FROM customer WHERE last_name = ?', (last_name,)
-            ).fetchone()
-        
-            if not customer:
-                error = 'No Customer Found.'
+            searchform = CustomerSearchForm(request.form)
+            customer = Customer.query.filter_by(lastname = searchform.lastname.data).first_or_404()
+            
 
-            if error is not None:
-                flash(error)
-            else:
-                return redirect(url_for('tickets.create', id = customer['id']))
+            return redirect(url_for('tickets.create', id = customer.id))
 
     return render_template('app/customer_landing.html')
 
@@ -47,78 +44,57 @@ def customer_landing():
 @bp.route('/<int:id>/create', methods=('GET', 'POST'))
 @login_required
 def create(id):
-    if request.method == 'POST':
-        ticket_type = request.form['ticket_type']
-        ticket_description = request.form['ticket_description']
-        promised = request.form['promised']
-        error = None
+    """View to create a new Ticket. Takes a Customer id as a parameter."""
 
-        if not ticket_type:
-            error = 'Ticket Type Required.'
-        elif not ticket_description:
-            error = 'Ticket Description Required.'
+    ticketform = TicketForm(request.form)
 
-        if error is not None:
-            flash(error)
-        else:
-            new_ticket = Ticket(
-                
-            )
-            db_session.add(Ticket(id, ticket_type=ticket_type,
-                ticket_description=ticket_description, ticket_status='New', created=datetime.now(),
-                promised=promised, bDone=False, bNotified=False,
-                bRetrieved=False ))
+    if request.method == 'POST' and ticketform.validate():
+        customer = Customer.query.filter_by(id = id).first_or_404()
+        #TODO Customer Id should be checked to be valid.
+        ticket = Ticket(customer.id, ticketform.tickettype.data, ticketform.ticketdescription.data,
+            ticketform.ticketstatus.data, ticketform.promised.data, ticketform.notes.data)
 
-            db_session.commit()
-            return redirect(url_for('tickets.main'))
+        db.session.add(ticket)
+        db.session.commit()        
+        return redirect(url_for('tickets.main'))
 
     return render_template('app/ticket/create.html', id = id)
 
 
-def get_ticket(id):
-    ticket = Ticket.query.filter(Ticket.id == 'id').first()
+def get_ticket(id) -> Ticket:
+    """Get a Ticket from the database and returns a 404 Error if not found."""
+
+    ticket = Ticket.query.filter_by(id=id).first_or_404()
     return ticket
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
+    """View to delete a Ticket."""
+
     ticket = get_ticket(id)
-    db_session.delete(ticket)
+    db.session.delete(ticket)
+    db.session.commit()
     return redirect(url_for('tickets.main'))
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
+    """View to update a Ticket and store the changes."""
+
     ticket = get_ticket(id)
+    updateform = TicketForm(request.form)
 
-    if request.method == 'POST':
-        ticket_type = request.form['ticket_type']
-        ticket_description = request.form['ticket_description']
-        ticketstatus = request.form.get('ticketstatus')
-        promised = request.form['promised']
-        error = None
+    if request.method == 'POST' and updateform.validate():
+        ticket.tickettype = updateform.tickettype.data
+        ticket.ticketdescription = updateform.ticketdescription.data
+        ticket.ticketstatus = updateform.ticketstatus.data
+        ticket.promised = updateform.promised.data
 
-        if ticketstatus is not None:
-            ticketstatus = 'In Progress'
-
-        if not ticket_type:
-            error = 'Ticket Type Required.'
-        elif not ticket_description:
-            error = 'Ticket Description Required.'
-        
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE ticket SET ticket_type = ?, ticket_description = ?, ticketstatus = ?, promised = ?'
-                ' WHERE id = ?',
-                (ticket_type, ticket_description, ticketstatus, promised, id)
-            )
-            db.commit()
-            return redirect(url_for('tickets.main'))
+        db.session.commit()
+        return redirect(url_for('tickets.main'))
     
     return render_template('app/ticket/update.html', ticket = ticket)
 
@@ -126,46 +102,21 @@ def update(id):
 @bp.route('/<int:id>/complete', methods=('GET', 'POST'))
 @login_required
 def complete(id):
+    """View to complete a ticket and set its status to done."""
     ticket = get_ticket(id)
+    completeform = CompleteTicketForm(request.form)
+    if request.method == 'POST' and completeform.validate():
+        labor = completeform.labor.data
+        parts = completeform.parts.data
+        other = completeform.other.data
+        notes = completeform.notes.data
+        ticket.bDone = True
+        ticket.bNotified = completeform.bNotified.data
+        ticket.ticketstatus = 'completed'
+        ticket.completed = datetime.now()
 
-    if request.method == 'POST':
-        labor = request.form['labor']
-        parts = request.form['parts']
-        other = request.form['other']
-        notes = request.form['notes']
-        hascalled = request.form.get('called')
-        haspickedup = request.form.get('pickedup')
-        ticketstatus = 'completed'
-        completed = date.today()
-        total = labor + parts + other
-        called = None
-        pickedup = None
-        error = None
-
-        if hascalled is not None:
-            ticketstatus = 'called'
-            called = date.today()
-
-        if haspickedup is not None:
-            ticketstatus = 'picked up'
-            pickedup = date.today()
-        
-        if labor is None:
-            error = 'Labor Cost Required.'
-        elif parts is None:
-            error = 'Parts Cost Required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE ticket SET labor = ?, parts = ?, other = ?, total = ?, notes = ?, called = ?, pickedup = ?, completed = ?, ticketstatus = ?'
-                ' WHERE id = ?',
-                (labor, parts, other, total, notes, called, pickedup, completed, ticketstatus, id)
-            )
-            db.commit()
-            return redirect(url_for('tickets.main'))
+        db.session.commit()
+        return redirect(url_for('tickets.main'))
 
     return render_template('app/ticket/complete.html', id = id, ticket = ticket)
 
@@ -173,6 +124,7 @@ def complete(id):
 @bp.route('/<int:id>/view')
 @login_required
 def view(id):
+    """View to display a single Ticket object."""
     ticket = get_ticket(id)
 
     return render_template('app/ticket/view.html', ticket = ticket)

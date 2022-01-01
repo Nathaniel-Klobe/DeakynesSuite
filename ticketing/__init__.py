@@ -10,7 +10,7 @@ __version__ = (0,1,0, "dev")
 db = SQLAlchemy()
 
 def init_app(test_config=None):
-    """Construct the Core Application"""
+    """Construct the Core Application."""
     app = Flask(__name__, instance_relative_config=True)
 
 

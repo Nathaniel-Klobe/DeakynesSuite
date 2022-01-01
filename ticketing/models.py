@@ -53,15 +53,15 @@ class Ticket(db.Model):
         ForeignKey('customer.id'), 
         nullable = False
         )
-    ticket_type = Column(
+    tickettype = Column(
         String(50), 
         nullable=False
         )
-    ticket_description = Column(
+    ticketdescription = Column(
         String(250), 
         nullable=False
         )
-    ticket_status = Column(
+    ticketstatus = Column(
         String(50), 
         nullable=False
         )
