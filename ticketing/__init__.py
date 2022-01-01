@@ -5,8 +5,6 @@ from flask import Flask
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 
-from ticketing.database import init_db_command
-
 __version__ = (0,1,0, "dev")
 
 db = SQLAlchemy()
@@ -14,6 +12,7 @@ db = SQLAlchemy()
 def init_app(test_config=None):
     """Construct the Core Application"""
     app = Flask(__name__, instance_relative_config=True)
+
 
     if test_config is None:
         #Load the instance config, if it exists, when not testing
@@ -35,7 +34,6 @@ def init_app(test_config=None):
 
         # Database
         db.create_all() # Create the Sql tables for our existing models
-        app.cli.add_command(init_db_command)
 
         #auth
         app.register_blueprint(auth.bp)

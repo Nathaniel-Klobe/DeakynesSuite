@@ -1,109 +1,74 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
-
 from werkzeug.exceptions import abort
-
 from ticketing.auth import login_required
-from ticketing.database import get_db
+from ticketing.forms.customerform import CustomerForm
+from ticketing.models import Customer, Ticket
+from . import db
 
 bp = Blueprint('customers', __name__, url_prefix='/customers')
 
 @bp.route('/')
 def main():
-    db = get_db()
-    cust = db.execute(
-        'SELECT * FROM customer'
-    ).fetchall()
-    return render_template('app/customer/customers.html', cust = cust)
+    """Displays a grid of all customers."""
+
+    customers = Customer.query.order_by(Customer.id).all()
+    return render_template('app/customer/customers.html', cust = customers)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-    if request.method == 'POST':
-        first_name = request.form['first_name'].lower()
-        last_name = request.form['last_name'].lower()
-        street_address = request.form['street_address'].lower()
-        phone = request.form['phone']
-        
-        error = None
+    """Create a new customer."""
 
-        if not first_name:
-            error = 'First Name Required.'
-        elif not last_name:
-            error = 'Last Name Required.'
-        elif not street_address:
-            error = 'Address Required.'
-        elif not phone:
-            error = 'Phone Required.'
+    customerform = CustomerForm(request.form)
+    if request.method == 'POST' and customerform.validate():
+        customer = Customer(customerform.firstname.data, customerform.lastname.data,
+            customerform.address.data, customerform.phone.data, customerform.email.data)
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO customer (first_name, last_name, street_address, phone) VALUES(?, ?, ?, ?)',
-                (first_name, last_name, street_address, phone)
-            )
-            db.commit()
-            return redirect(url_for('customers.main'))
+        db.session.add(customer)
+        db.session.commit()
+        return redirect(url_for('customers.main'))
+
     return render_template('app/customer/create.html')
 
 
 def get_customer(id):
-    customer = get_db().execute(
-        'SELECT id, first_name, last_name, street_address, phone'
-        ' FROM customer'
-        ' WHERE id = ?', (id,)
-    ).fetchone()
+    """Get a Customer from the database and returns a 404 Error if not found."""
 
-    if customer is None:
-        abort(404, f"Customer id {id} doesn't exist.")
-
+    customer = Customer.query.filter_by(id=id).first_or_404()
     return customer
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
-    get_customer(id)
-    db = get_db()
-    db.execute('DELETE FROM customer WHERE id = ?', (id,))
-    db.commit()
+    """Delete the customer from the database"""
+
+    customer = get_customer(id)
+    db.session.delete(customer)
+    db.session.commit()
     return redirect(url_for('customers.main'))
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
+    """Update a current customer. Takes an id as a parameter."""
+
     customer = get_customer(id)
+    customerform = CustomerForm(request.form)
+    if request.method == 'POST' and customerform.validate():
+        customer.firstname = customerform.firstname.data
+        customer.lastname = customerform.lastname.data
+        customer.address = customerform.address.data
+        customer.phone = customerform.phone.data
+        customer.email = customerform.email.data
 
-    if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['ticket_description']
-        street_address = request.form.get('street_address')
-        phone = request.form['promised']
-        error = None
+        db.session.commit()
 
-        if not first_name:
-            error = 'First Name Required.'
-        elif not last_name:
-            error = 'Last Name Required.'
-        elif not phone:
-            error = 'Phone Required.'
-        
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE customer SET first_name = ?, last_name = ?, street_address = ?, phone = ?'
-                ' WHERE id = ?',
-                (first_name, last_name, street_address, phone, id)
-            )
-            db.commit()
-            return redirect(url_for('customer.main'))
+        return redirect(url_for('customer.main'))
     
     return render_template('app/ticket/update.html', customer = customer)
 
@@ -111,32 +76,12 @@ def update(id):
 @bp.route('/<int:id>/view')
 @login_required
 def view(id):
+    """View a Customer. Takes an id as a parameter."""
+    
     customer = get_customer(id)
+    tickets = Ticket.query.filter_by(customer_id = id).order_by(Ticket.id).all()
 
-    db = get_db()
-    tickets = db.execute(
-        'SELECT t.id, ticket_type, ticketstatus, reference, created'
-        ' FROM ticket t JOIN customer c ON t.customer_id = c.id'
-        ' WHERE customer_id = ?'
-        ' ORDER BY created DESC',
-        (id,)
-    ).fetchall()
-    orders = db.execute(
-        'SELECT o.id, order_type, created'
-        ' FROM specialorder o JOIN customer c ON o.customer_id = c.id'
-        ' WHERE customer_id = ?'
-        ' ORDER BY created DESC',
-        (id,)
-    ).fetchall()
-    rentals = db.execute(
-        'SELECT r.id, rentalitem, created, promised'
-        ' FROM rental r JOIN customer c ON r.customer_id = c.id'
-        ' WHERE customer_id = ?'
-        ' ORDER BY created DESC',
-        (id,)
-    ).fetchall()
-
-    return render_template('app/customer/view.html', customer = customer, tickets = tickets, orders = orders, rentals = rentals)
+    return render_template('app/customer/view.html', customer = customer, tickets = tickets)
 
 
 @bp.route('/options', methods=('GET', 'POST'))

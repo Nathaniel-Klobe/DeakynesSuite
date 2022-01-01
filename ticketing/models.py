@@ -1,24 +1,24 @@
 """Data Models."""
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, String, Float, Text
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
 from . import db
 
 class Customer(db.Model):
     """Data model for Customer Records"""
-
     __tablename__ = 'customers'
     id = Column(
         Integer,
         autoincrement=True,
         primary_key=True
         )
-    first_name = Column(
+    firstname = Column(
         String(50), 
         nullable=False
         )
-    last_name = Column(
+    lastname = Column(
         String(50), 
         nullable=False
         )
@@ -105,6 +105,8 @@ class Ticket(db.Model):
         Text, 
         nullable=True
         )
+
+    customer = relationship('Customer', backref=backref('customers', lazy=True))
     
     def __repr__(self):
         return f'<Ticket {self.id!r}>'
