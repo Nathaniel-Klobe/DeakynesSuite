@@ -6,21 +6,14 @@
 {% endblock %}
 
 {% block content %}
-    <form method="post">
-        <label for="ticket_type">Ticket Type</label>
-        <select name="ticket_type" id="ticket_type" value="{{ request.form['ticket_type'] }}" required>
-          <option value="screen">Screen</option>
-          <option value="window">Window</option>
-          <option value="small engine">Small Engine</option>
-          <option value="lamp">Lamp</option>
-          <option value="other">Other</option>
-        </select>
-        <label for="ticket_description">Ticket Description</label>
-        <textarea name="ticket_description" id="ticket_description" value="{{ request.form['ticket_description'] }}" required></textarea>
-        <label for="reference">Reference ID</label>
-        <input name="reference" id="reference" value="{{ request.form['reference'] }}">
-        <label for="promised">Promised</label>
-        <input name="promised" id="promised" type="date" value="{{ request.form['promised'] }}">
-        <input type="submit" value="Save">
-    </form>
+  {% from "_formhelpers.html" import render_field %}
+  <form method=post>
+    <dl>
+      {{ render_field(form.tickettype) }}
+      {{ render_field(form.ticketdescription) }}
+      {{ render_field(form.ticketstatus) }}
+      {{ render_field(form.promised) }}
+      {{ render_field(form.notes) }}
+    </dl>
+  </form>
 {% endblock %}

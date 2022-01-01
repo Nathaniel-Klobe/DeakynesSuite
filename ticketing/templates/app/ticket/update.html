@@ -5,25 +5,18 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        <label for="ticket_type">Ticket Type</label>
-        <select name="ticket_type" id="ticket_type" value="{{ request.form['ticket_type'] or ticket['ticket_type'] }}" required>
-            <option value="screen">Screen</option>
-            <option value="window">Window</option>
-            <option value="small engine">Small Engine</option>
-            <option value="lamp">Lamp</option>
-            <option value="other">Other</option>
-          </select>
-        <label for="ticket_description">Ticket Description</label>
-        <textarea name="ticket_description" id="ticket_description" value="{{ request.form['ticket_description'] or ticket['ticket_description'] }}" required></textarea>
-        <label for="ticketstatus">In Progress</label>
-        <input name="ticketstatus" id="ticketstatus" type="checkbox" value="{{ request.form['ticketstatus'] or ticket['ticketstatus'] }}">
-        <label for="promised">Promised</label>
-        <input name="promised" id="promised" type="date" value="{{ request.form['promised'] or ticket['promised'] }}">
-        <input type="submit" value="Save">
-    </form>
-    <hr>
-    <form action="{{ url_for('tickets.delete', id = ticket['id']) }}" method="POST">
-        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-    </form>
+  {% from "_formhelpers.html" import render_field %}
+  <form method=post>
+    <dl>
+      {{ render_field(form.tickettype) }}
+      {{ render_field(form.ticketdescription) }}
+      {{ render_field(form.ticketstatus) }}
+      {{ render_field(form.promised) }}
+      {{ render_field(form.notes) }}
+    </dl>
+  </form>
+  <hr>
+  <form action="{{ url_for('tickets.delete', id = ticket['id']) }}" method="POST">
+      <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+  </form>
 {% endblock %}

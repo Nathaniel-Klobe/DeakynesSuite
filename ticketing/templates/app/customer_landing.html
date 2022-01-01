@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        <h3>Search For a Customer</h3>
-        <label for="last_name">Last Name</label>
-        <input name="last_name" id="last_name" value="{{ request.form['last_name'] }}" required>
-        <input type="submit" name="search" value="Find">
+{% from "_formhelpers.html" import render_field %}
+    <form method=post>
+    <dl>
+        {{ render_field(form.lastname) }}
+    </dl>
     </form>
     <form method="POST">
         <h3>Or Create a New Customer</h3>
